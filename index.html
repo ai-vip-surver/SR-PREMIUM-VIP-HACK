@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>𝐀𝐏𝐔𝐑𝐁𝐎-𝗩𝗮𝗶</title>
+
+<style>
+:root{--glow:#00d2ff}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#000;font-family:Segoe UI,sans-serif;overflow:hidden}
+iframe{width:100%;height:100%;border:none}
+
+/* FLOAT BOX */
+#main-box{
+position:fixed;top:15%;left:50%;
+transform:translate3d(-50%,0,0);
+width:190px;background:rgba(255,255,255,.05);
+backdrop-filter:blur(15px);
+border-radius:20px;padding:3px;z-index:9999;
+animation:float 4s ease-in-out infinite;
+touch-action:none;
+}
+#main-box::before{
+content:"";position:absolute;inset:-2px;
+background:linear-gradient(45deg,red,#ff00f7,#00d2ff,#00ff00,red);
+background-size:400%;border-radius:20px;z-index:-1;
+animation:border 8s linear infinite;
+}
+@keyframes border{0%{background-position:0%}100%{background-position:400%}}
+@keyframes float{50%{transform:translate3d(-50%,-8px,0)}}
+
+.inner{background:rgba(10,10,15,.95);border-radius:18px;padding:12px;text-align:center;color:#fff}
+.title{font-size:11px;font-weight:900;letter-spacing:1.5px;margin-bottom:10px;text-shadow:0 0 8px var(--glow)}
+input{width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:11px;text-align:center}
+button{margin-top:8px;width:100%;padding:7px;border:none;border-radius:20px;background:linear-gradient(90deg,#00d2ff,#3a7bd5);color:#fff;font-size:11px;font-weight:bold;cursor:pointer}
+.warn{color:#ff4d4d;font-size:9px;margin-top:6px;display:none}
+a{display:block;margin-top:10px;font-size:9px;color:#00d2ff;text-decoration:none;border:1px dashed rgba(0,210,255,.4);padding:5px;border-radius:6px}
+
+#signal{display:none}
+#result{font-size:26px;font-weight:900;margin:6px 0;background:linear-gradient(#fff,#999);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.num{font-family:monospace;font-size:16px;color:var(--glow);margin-bottom:8px}
+.progress{height:4px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.bar{height:100%;background:linear-gradient(90deg,#00d2ff,#00ff87);width:100%;transition:width 1s linear}
+.status{font-size:8px;margin-top:6px;color:#00ff87}
+</style>
+</head>
+
+<body>
+<iframe src="https://amarclub.net/#/register?invitationCode=447361362719"></iframe>
+
+<div id="main-box">
+<div class="inner">
+
+<div class="title">𝐀𝐏𝐔𝐑𝐁𝐎-𝗩𝗮𝗶</div>
+
+<!-- LOGIN -->
+<div id="loginBox">
+<input id="key" type="password" placeholder="ENTER SERVER KEY">
+<button onclick="doLogin()">CONNECT AI SERVER</button>
+<div class="warn" id="warn">❌ WRONG SERVER KEY</div>
+<a href="https://t.me/TRADER_2BROTHERS">GET ACCESS KEY</a>
+</div>
+
+<!-- SIGNAL -->
+<div id="signal">
+<div style="font-size:9px;color:#aaa">WINGO 30S AI SIGNAL</div>
+<div id="result">WAIT</div>
+<div class="num" id="nums">0 & 0</div>
+<div style="font-size:9px">NEXT: <span id="time" style="color:var(--glow)">30</span>s</div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="status">SERVER CONNECTED</div>
+<a href="https://t.me/TRADER_2BROTHERS">AI TELEGRAM SERVER</a>
+</div>
+
+</div>
+</div>
+
+<script>
+/* ===== SMOOTH DRAG ===== */
+const box=document.getElementById("main-box");
+let dragging=false,sx=0,sy=0,x=0,y=0;
+const pos=e=>e.touches?e.touches[0]:e;
+
+box.addEventListener("mousedown",start);
+box.addEventListener("touchstart",start,{passive:false});
+function start(e){
+if(e.target.closest("input,button,a")) return;
+e.preventDefault(); dragging=true; box.style.animation="none";
+let p=pos(e); sx=p.clientX-x; sy=p.clientY-y;
+requestAnimationFrame(move);
+}
+document.addEventListener("mousemove",drag);
+document.addEventListener("touchmove",drag,{passive:false});
+function drag(e){ if(!dragging) return; let p=pos(e); x=p.clientX-sx; y=p.clientY-sy; }
+document.addEventListener("mouseup",()=>dragging=false);
+document.addEventListener("touchend",()=>dragging=false);
+function move(){ if(dragging){ box.style.transform=`translate3d(${x}px,${y}px,0)`; requestAnimationFrame(move);} }
+
+/* ===== LOGIN FIX ===== */
+const PASS="Apurbo5598";
+const loginBox=document.getElementById("loginBox");
+const signalBox=document.getElementById("signal");
+
+function doLogin(){
+const v=document.getElementById("key").value.trim();
+if(v===PASS){
+loginBox.style.display="none";
+signalBox.style.display="block";
+startAI();
+}else document.getElementById("warn").style.display="block";
+}
+
+/* ===== AI ===== */
+let last=-1,history=[];
+function startAI(){
+setInterval(()=>{
+let n=new Date(),s=n.getSeconds();
+let r=s>=30?60-s:30-s;
+time.innerText=r; bar.style.width=(r/30*100)+"%";
+let b=Math.floor(n.getTime()/30000);
+if(b!==last && r<25){last=b;predict(b);}
+},1000);
+}
+function predict(b){
+let seed=b%10,res=seed>4?"BIG":"SMALL";
+if(history.slice(-3).every(v=>v===res)) res=res==="BIG"?"SMALL":"BIG";
+history.push(res); if(history.length>10)history.shift();
+result.innerText=res;
+nums.innerText=res==="BIG"?(5+seed%5)+" & "+(6+seed%4):(seed%5)+" & "+((seed+2)%5);
+}
+</script>
+</body>
+</html>
